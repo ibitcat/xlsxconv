@@ -18,4 +18,5 @@ func main() {
 	// app run
 	vcl.Application.Run()
 	mainForm.Inifile.Free()
+	mainForm.icon.Free()
 }

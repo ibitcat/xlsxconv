@@ -24,6 +24,7 @@ const E_ERROT_STR = "生成错误"
 
 type TFormConv struct {
 	*vcl.TForm
+	icon                    *vcl.TIcon        // ICON
 	MainMenu                *vcl.TMainMenu    // 主菜单栏
 	Panel                   *vcl.TPanel       // 布局panel
 	Label1, Label2, Label3  *vcl.TLabel       // xlsx路径、输出路径、翻译路径标签
@@ -141,18 +142,6 @@ func (f *TFormConv) initFormMenu() {
 	item.Add(subMenu)
 
 	// 分割线
-	subMenu = vcl.NewMenuItem(mainForm)
-	subMenu.SetCaption("-")
-	item.Add(subMenu)
-
-	subMenu = vcl.NewMenuItem(mainForm)
-	subMenu.SetCaption("历史记录...")
-	item.Add(subMenu)
-
-	m := vcl.NewMenuItem(mainForm)
-	m.SetCaption("第一个历史记录")
-	subMenu.Add(m)
-
 	subMenu = vcl.NewMenuItem(mainForm)
 	subMenu.SetCaption("-")
 	item.Add(subMenu)
