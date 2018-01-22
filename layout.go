@@ -345,8 +345,12 @@ func (f *TFormConv) initListView() {
 	pm.Items().Add(pmitem2)
 
 	pmitem3 := vcl.NewMenuItem(mainForm)
-	pmitem3.SetCaption("显示错误")
+	pmitem3.SetCaption("打开翻译目录")
 	pm.Items().Add(pmitem3)
+
+	pmitem4 := vcl.NewMenuItem(mainForm)
+	pmitem4.SetCaption("显示错误")
+	pm.Items().Add(pmitem4)
 	f.Pmitem = pm
 
 	// 生成结果列表
@@ -399,10 +403,15 @@ func (f *TFormConv) initListView() {
 		item := f.ListView.Selected()
 		idx := int(item.Data())
 		dir := f.getOutPutDir() + "\\" + Convs[idx].FolderName
-		println(dir)
 		rtl.SysOpen(dir)
 	})
 	pmitem3.SetOnClick(func(vcl.IObject) {
+		dir := f.getLangDir()
+		if len(dir) > 0 {
+			rtl.SysOpen(dir)
+		}
+	})
+	pmitem4.SetOnClick(func(vcl.IObject) {
 		item := f.ListView.Selected()
 		idx := int(item.Data())
 		f.MsgBox(Convs[idx].formatErr(), "生成结果")
