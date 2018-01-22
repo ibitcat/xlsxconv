@@ -469,7 +469,7 @@ func (f *TFormConv) setEvent() {
 	})
 	lv1.SetOnAdvancedCustomDrawItem(func(sender *vcl.TListView, item *vcl.TListItem, state types.TCustomDrawState, Stage types.TCustomDrawStage, defaultDraw *bool) {
 		canvas := sender.Canvas()
-		font := canvas.Font()
+		//font := canvas.Font()
 		i := int(item.Index())
 		if i%2 == 0 {
 			canvas.Brush().SetColor(0x02F0EEF7)
@@ -478,10 +478,10 @@ func (f *TFormConv) setEvent() {
 		resStr := item.SubItems().Strings(1)
 		if resStr == E_ERROT_STR {
 			canvas.Brush().SetColor(types.ClRed)
-			font.SetColor(types.ClSilver)
+			//font.SetColor(types.ClSilver)
 		} else if resStr == E_WARN_STR {
 			canvas.Brush().SetColor(types.ClYellow)
-			font.SetColor(types.ClSilver)
+			//font.SetColor(types.ClSilver)
 		}
 	})
 
