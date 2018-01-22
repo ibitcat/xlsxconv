@@ -26,6 +26,7 @@ type TFormConv struct {
 	*vcl.TForm
 	icon                    *vcl.TIcon        // ICON
 	MainMenu                *vcl.TMainMenu    // 主菜单栏
+	FrmAbout                *vcl.TForm        // 关于
 	Panel                   *vcl.TPanel       // 布局panel
 	Label1, Label2, Label3  *vcl.TLabel       // xlsx路径、输出路径、翻译路径标签
 	InputCbox               *vcl.TComboBox    // xlsx路径选择框
@@ -157,12 +158,15 @@ func (f *TFormConv) initFormMenu() {
 	mainMenu.Items().Add(item)
 
 	item = vcl.NewMenuItem(mainForm)
-	item.SetCaption("关于(&A)")
+	item.SetCaption("帮助(&H)")
 
 	subMenu = vcl.NewMenuItem(mainForm)
-	subMenu.SetCaption("帮助(&H)")
+	subMenu.SetCaption("关于(&A)")
 	item.Add(subMenu)
 	mainMenu.Items().Add(item)
+	subMenu.SetOnClick(func(vcl.IObject) {
+		f.FrmAbout.ShowModal()
+	})
 
 	// 状态栏
 	statusbar := vcl.NewStatusBar(mainForm)
@@ -179,6 +183,35 @@ func (f *TFormConv) initFormMenu() {
 	pn3.SetText("总耗时(ms):0")
 	pn3.SetWidth(100)
 	f.Statusbar = statusbar
+}
+
+func (f *TFormConv) initfrmAbout() {
+	frmAbout := vcl.Application.CreateForm()
+	frmAbout.ScreenCenter()
+	frmAbout.SetCaption("关于")
+	frmAbout.SetBorderStyle(types.BsSingle)
+	frmAbout.EnabledMaximize(false)
+	frmAbout.EnabledMinimize(false)
+	frmAbout.SetWidth(405)
+	frmAbout.SetHeight(210)
+	f.FrmAbout = frmAbout
+
+	about := vcl.NewLabel(frmAbout)
+	about.SetParent(frmAbout)
+	about.SetAlign(types.AlClient)
+	//about.SetTop(frmAbout.ClientHeight() / 2)
+	about.SetAutoSize(false)
+	about.SetAlignment(types.TaCenter)
+	about.SetLayout(types.TlCenter)
+	about.SetStyleElements(types.AkRight)
+	about.SetCaption("这是一个奇怪的工具\r\ndomi © 2018")
+
+	//	btn := vcl.NewButton(frmAbout)
+	//	btn.SetParent(frmAbout)
+	//	btn.SetCaption("OK")
+	//	btn.SetModalResult(types.MbOK)
+	//	btn.SetLeft(frmAbout.ClientWidth() - btn.Width() - 10)
+	//	btn.SetTop(frmAbout.ClientHeight() - btn.Height() - 10)
 }
 
 // 初始化panel内的布局
@@ -522,6 +555,7 @@ func CreateMainForm() *TFormConv {
 func (f *TFormConv) CreateControl() {
 	f.loadIni()
 	f.initFormMenu()
+	f.initfrmAbout()
 	f.initPanel()
 	f.initListView()
 	f.setEvent()
