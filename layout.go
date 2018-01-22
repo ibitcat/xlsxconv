@@ -5,6 +5,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/user"
 	"path/filepath"
 	"strings"
 	"time"
@@ -95,7 +96,8 @@ func (f *TFormConv) updateProcess() {
 }
 
 func (f *TFormConv) loadIni() {
-	iniFile := vcl.NewIniFile(`C:\Users\Administrator\Documents\xlsx2lua.ini`)
+	usr, _ := user.Current()
+	iniFile := vcl.NewIniFile(usr.HomeDir + "\\xlsx2lua.ini")
 	f.Inifile = iniFile
 
 	for i := 1; i <= 10; i++ {
