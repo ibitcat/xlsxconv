@@ -5,18 +5,18 @@ import (
 )
 
 var (
-	mainForm *TFormConv
+	ConvForm *TFormConv
 	Convs    []*XlsxConv
 	ConvChan chan *XlsxConv
 )
 
 func main() {
-	mainForm = CreateMainForm()
-	mainForm.CreateControl()
-	mainForm.LoadXlxs()
+	ConvForm = CreateMainForm()
+	ConvForm.CreateControl()
+	ConvForm.LoadXlxs()
 
 	// app run
 	vcl.Application.Run()
-	mainForm.Inifile.Free()
-	mainForm.icon.Free()
+	ConvForm.Inifile.Free()
+	ConvForm.icon.Free()
 }

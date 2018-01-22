@@ -147,7 +147,7 @@ func (c *XlsxConv) hasChanged() bool {
 
 // 读取翻译xlsx文件
 func (c *XlsxConv) loadLangXlsx() {
-	langDir := mainForm.getLangDir()
+	langDir := ConvForm.getLangDir()
 	if len(langDir) == 0 {
 		return
 	}
@@ -197,7 +197,7 @@ func (c *XlsxConv) getLangCellText(id string, f FieldInfo) string {
 
 func (c *XlsxConv) checkLangText(langText, base string, id, f string) bool {
 	if len(langText) > 0 {
-		flags := mainForm.TestChkBox.Checked()
+		flags := ConvForm.TestChkBox.Checked()
 		if flags && !checkAscii(base, langText) {
 			errStr := fmt.Sprintf("[翻译内容不匹配 id=%s,字段=%s]:源=%s,翻译=%s", id, f, base, langText)
 			c.Errs = append(c.Errs, ErrorInfo{E_ERROR, errStr})
@@ -325,7 +325,7 @@ func (c *XlsxConv) generate() {
 }
 
 func (c *XlsxConv) outPutToFile(rowsSlice []string, format string) {
-	outDir := mainForm.getOutPutDir() + "\\" + c.FolderName
+	outDir := ConvForm.getOutPutDir() + "\\" + c.FolderName
 	_, err := os.Stat(outDir)
 	if os.IsNotExist(err) {
 		err = os.MkdirAll(outDir, os.ModePerm)
@@ -361,24 +361,24 @@ func startConv(idxs map[int]bool) {
 
 		for i := 0; i < count; i++ {
 			<-ConvChan
-			mainForm.updateProcess()
+			ConvForm.updateProcess()
 		}
 		saveConvTime(idxs)
-		mainForm.ConvResult(idxs, startTime)
+		ConvForm.ConvResult(idxs, startTime)
 	}
 }
 
 func saveConvTime(idxs map[int]bool) {
-	parentDir := mainForm.getParentDir()
+	parentDir := ConvForm.getParentDir()
 	if len(parentDir) == 0 {
-		mainForm.MsgBox("保存xlsx时间出错", "错误")
+		ConvForm.MsgBox("保存xlsx时间出错", "错误")
 		return
 	}
 
 	file := parentDir + "\\" + "lastModTime.txt"
 	outFile, operr := os.OpenFile(file, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0666)
 	if operr != nil {
-		mainForm.MsgBox("创建[lastModTime.txt]文件出错", "错误")
+		ConvForm.MsgBox("创建[lastModTime.txt]文件出错", "错误")
 	}
 	defer outFile.Close()
 

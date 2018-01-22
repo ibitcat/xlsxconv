@@ -174,7 +174,7 @@ func (f *TFormConv) initFormMenu() {
 	pnl.SetWidth(100)
 	pn2 := statusbar.Panels().Add()
 	pn2.SetText("有变化的数量:0")
-	pn2.SetWidth(100)
+	pn2.SetWidth(200)
 	pn3 := statusbar.Panels().Add()
 	pn3.SetText("总耗时(ms):0")
 	pn3.SetWidth(100)
@@ -493,6 +493,9 @@ func lvTraiCompare(sender vcl.IObject, item1, item2 *vcl.TListItem, data int32, 
 
 /*------------------------public------------------------*/
 func CreateMainForm() *TFormConv {
+	form := new(TFormConv)
+
+	// icon
 	icon := vcl.NewIcon()
 	icon.LoadFromResourceID(rtl.MainInstance(), 3)
 	vcl.Application.Initialize()
@@ -509,7 +512,7 @@ func CreateMainForm() *TFormConv {
 	mainForm.SetHeight(800)
 	mainForm.SetDoubleBuffered(true)
 
-	form := new(TFormConv)
+	form.icon = icon
 	form.TForm = mainForm
 	form.History = make([]string, 0, 10)
 	return form
