@@ -84,8 +84,8 @@ func (f *TFormConv) MsgBox(text, caption string) {
 }
 
 func (f *TFormConv) updateEdit() {
-	dir := f.getParentDir()
-	if len(dir) > 0 {
+	if len(f.getInPutDir()) > 0 {
+		dir := f.getParentDir()
 		f.OutOutEdit.SetText(dir + "\\l-xlsx")
 		f.LangEdit.SetText(FindLangFolder(dir))
 	}
@@ -292,12 +292,18 @@ func (f *TFormConv) initPanel() {
 		left += f.Btn2.Width() + 10
 		svnUpBtn := _createBtn("SVN更新", left, top)
 		svnUpBtn.SetOnClick(func(vcl.IObject) {
+			if len(f.getInPutDir()) == 0 {
+				f.MsgBox("请选择配置路径(xlsx文件夹)", "错误")
+				return
+			}
 			_, err := exec.LookPath("TortoiseProc")
 			if err == nil {
 				command := fmt.Sprintf(`/command:update /path:%s /closeonend:0`, f.getParentDir())
-				fmt.Println(command)
 				cmdStr := exec.Command("TortoiseProc", command)
 				err = cmdStr.Run()
+				if err != nil {
+					f.MsgBox("SVN更新错误", "错误")
+				}
 			} else {
 				f.MsgBox("请先安装TortoiseProc", "错误")
 			}
@@ -306,12 +312,18 @@ func (f *TFormConv) initPanel() {
 
 		svnCiBtn := _createBtn("SVN提交", left, top)
 		svnCiBtn.SetOnClick(func(vcl.IObject) {
+			if len(f.getInPutDir()) == 0 {
+				f.MsgBox("请选择配置路径(xlsx文件夹)", "错误")
+				return
+			}
 			_, err := exec.LookPath("TortoiseProc")
 			if err == nil {
 				command := fmt.Sprintf(`/command:commit /path:%s\ /closeonend:0`, f.getParentDir())
-				fmt.Println(command)
 				cmdStr := exec.Command("TortoiseProc", command)
 				err = cmdStr.Run()
+				if err != nil {
+					f.MsgBox("SVN提交错误", "错误")
+				}
 			} else {
 				f.MsgBox("请先安装TortoiseProc", "错误")
 			}
