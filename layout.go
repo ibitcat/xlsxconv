@@ -5,6 +5,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"os/user"
 	"path/filepath"
 	"strings"
@@ -287,6 +288,34 @@ func (f *TFormConv) initPanel() {
 
 		left += f.Btn1.Width() + 10
 		f.Btn2 = _createBtn("生成配置", left, top)
+
+		left += f.Btn2.Width() + 10
+		svnUpBtn := _createBtn("SVN更新", left, top)
+		svnUpBtn.SetOnClick(func(vcl.IObject) {
+			_, err := exec.LookPath("TortoiseProc")
+			if err == nil {
+				command := fmt.Sprintf(`/command:update /path:%s /closeonend:0`, f.getParentDir())
+				fmt.Println(command)
+				cmdStr := exec.Command("TortoiseProc", command)
+				err = cmdStr.Run()
+			} else {
+				f.MsgBox("请先安装TortoiseProc", "错误")
+			}
+		})
+		left += svnUpBtn.Width() + 10
+
+		svnCiBtn := _createBtn("SVN提交", left, top)
+		svnCiBtn.SetOnClick(func(vcl.IObject) {
+			_, err := exec.LookPath("TortoiseProc")
+			if err == nil {
+				command := fmt.Sprintf(`/command:commit /path:%s\ /closeonend:0`, f.getParentDir())
+				fmt.Println(command)
+				cmdStr := exec.Command("TortoiseProc", command)
+				err = cmdStr.Run()
+			} else {
+				f.MsgBox("请先安装TortoiseProc", "错误")
+			}
+		})
 	}
 
 	// 第2行
