@@ -336,6 +336,14 @@ func (f *TFormConv) initListView() {
 	pmitem.SetCaption("打开文件")
 	pm.Items().Add(pmitem)
 
+	pmLang := vcl.NewMenuItem(mainForm)
+	pmLang.SetCaption("打开翻译文件")
+	pm.Items().Add(pmLang)
+
+	line := vcl.NewMenuItem(mainForm)
+	line.SetCaption("-")
+	pm.Items().Add(line)
+
 	pmitem1 := vcl.NewMenuItem(mainForm)
 	pmitem1.SetCaption("打开文件所在目录")
 	pm.Items().Add(pmitem1)
@@ -348,9 +356,13 @@ func (f *TFormConv) initListView() {
 	pmitem3.SetCaption("打开翻译目录")
 	pm.Items().Add(pmitem3)
 
-	pmitem4 := vcl.NewMenuItem(mainForm)
-	pmitem4.SetCaption("显示错误")
-	pm.Items().Add(pmitem4)
+	line = vcl.NewMenuItem(mainForm)
+	line.SetCaption("-")
+	pm.Items().Add(line)
+
+	pmErr := vcl.NewMenuItem(mainForm)
+	pmErr.SetCaption("显示错误")
+	pm.Items().Add(pmErr)
 	f.Pmitem = pm
 
 	// 生成结果列表
@@ -395,6 +407,19 @@ func (f *TFormConv) initListView() {
 		//cmdStr := exec.Command("cmd", "/C start "+item.Caption())
 		//go cmdStr.Run()
 	})
+	pmLang.SetOnClick(func(vcl.IObject) {
+		item := f.ListView.Selected()
+		idx := int(item.Data())
+		if idx >= len(Convs) {
+			return
+		}
+		c := Convs[idx]
+		dir := f.getLangDir()
+		if len(dir) > 0 {
+			fname := dir + "\\" + strings.Replace("\\"+c.RelPath, "\\", "$", -1)
+			rtl.SysOpen(fname)
+		}
+	})
 	pmitem1.SetOnClick(func(vcl.IObject) {
 		item := f.ListView.Selected()
 		rtl.SysOpen(rtl.ExtractFilePath(item.Caption()))
@@ -411,7 +436,7 @@ func (f *TFormConv) initListView() {
 			rtl.SysOpen(dir)
 		}
 	})
-	pmitem4.SetOnClick(func(vcl.IObject) {
+	pmErr.SetOnClick(func(vcl.IObject) {
 		item := f.ListView.Selected()
 		idx := int(item.Data())
 		f.MsgBox(Convs[idx].formatErr(), "生成结果")
