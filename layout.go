@@ -289,6 +289,7 @@ func (f *TFormConv) initPanel() {
 
 		left += f.Btn1.Width() + 10
 		f.Btn2 = _createBtn("生成配置", left, top)
+		f.Btn2.SetHint("生成配置过程中，其他操作将无法进行")
 
 		left += f.Btn2.Width() + 10
 		svnUpBtn := _createBtn("SVN更新", left, top)
@@ -568,9 +569,8 @@ func (f *TFormConv) setEvent() {
 			}
 		}
 		if len(idxs) > 0 {
-			btn1.SetEnabled(false)
-			btn2.SetEnabled(false)
-			cbox.SetEnabled(false)
+			f.Panel.SetEnabled(false)
+			f.ListView.SetEnabled(false)
 			f.PrgBar.SetMax(int32(len(idxs)))
 
 			go startConv(idxs)
@@ -714,9 +714,8 @@ func (f *TFormConv) LoadXlxs() {
 }
 
 func (f *TFormConv) ConvResult(idxs map[int]bool, startTime time.Time) {
-	f.Btn2.SetEnabled(true)
-	f.Btn1.SetEnabled(true)
-	f.InputCbox.SetEnabled(true)
+	f.Panel.SetEnabled(true)
+	f.ListView.SetEnabled(true)
 	listView := f.ListView
 
 	var i int32
