@@ -339,6 +339,7 @@ func (f *TFormConv) initPanel() {
 		left += f.OutOutEdit.Width() + 10
 
 		refreshBtn := _createBtn("刷新", left, top)
+		refreshBtn.SetHint("重新载入配置")
 		refreshBtn.SetOnClick(func(vcl.IObject) {
 			f.updateEdit()
 			f.LoadXlxs()
@@ -372,6 +373,7 @@ func (f *TFormConv) initPanel() {
 		f.ChangeChkBox = _createChkBox("选择有变化的", left, top)
 		left = left + f.ChangeChkBox.Width() + 10
 		f.TestChkBox = _createChkBox("实验性特性", left, top)
+		f.TestChkBox.SetHint("针对翻译，能够检查翻译和源配置的英文字符是否一一对应")
 	}
 	f.updateEdit()
 }
@@ -626,6 +628,7 @@ func CreateMainForm() *TFormConv {
 	mainForm.SetWidth(1024)
 	mainForm.SetHeight(800)
 	mainForm.SetDoubleBuffered(true)
+	mainForm.SetShowHint(true)
 
 	form.icon = icon
 	form.TForm = mainForm
