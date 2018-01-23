@@ -37,6 +37,7 @@ type TFormConv struct {
 	Btn1, Btn2              *vcl.TButton      // 按钮(选择路径，生成配置)
 	AllChkBox, ChangeChkBox *vcl.TCheckBox    // 全选、选择有变化的
 	TestChkBox              *vcl.TCheckBox    // 实验性黑科技
+	HideChkBox              *vcl.TCheckBox    // 隐藏未变化的
 	ListView                *vcl.TListView    // 列表
 	PrgBar                  *vcl.TProgressBar // 进度条
 	Statusbar               *vcl.TStatusBar   // 底部状态栏
@@ -303,6 +304,8 @@ func (f *TFormConv) initPanel() {
 				err = cmdStr.Run()
 				if err != nil {
 					f.MsgBox("SVN更新错误", "错误")
+				} else {
+					f.LoadXlxs()
 				}
 			} else {
 				f.MsgBox("请先安装TortoiseProc", "错误")
@@ -341,7 +344,6 @@ func (f *TFormConv) initPanel() {
 		refreshBtn := _createBtn("刷新", left, top)
 		refreshBtn.SetHint("重新载入配置")
 		refreshBtn.SetOnClick(func(vcl.IObject) {
-			f.updateEdit()
 			f.LoadXlxs()
 		})
 	}
@@ -370,10 +372,17 @@ func (f *TFormConv) initPanel() {
 		left, top := int32(10), f.Label3.Top()+f.Label3.Height()+10
 		f.AllChkBox = _createChkBox("全选", left, top)
 		left = left + f.AllChkBox.Width() + 10
+
 		f.ChangeChkBox = _createChkBox("选择有变化的", left, top)
+		f.ChangeChkBox.SetChecked(true)
 		left = left + f.ChangeChkBox.Width() + 10
+
 		f.TestChkBox = _createChkBox("实验性特性", left, top)
 		f.TestChkBox.SetHint("针对翻译，能够检查翻译和源配置的英文字符是否一一对应")
+
+		left = left + f.TestChkBox.Width() + 10
+		f.HideChkBox = _createChkBox("隐藏未变化文件", left, top)
+		f.HideChkBox.SetWidth(150)
 	}
 	f.updateEdit()
 }
@@ -570,13 +579,13 @@ func (f *TFormConv) setEvent() {
 		}
 	})
 
+	// check box
 	allChkBox.SetOnClick(func(vcl.IObject) {
 		var i int32
 		for i = 0; i < lv1.Items().Count(); i++ {
 			lv1.Items().Item(i).SetChecked(allChkBox.Checked())
 		}
 	})
-
 	f.ChangeChkBox.SetOnClick(func(vcl.IObject) {
 		listView := f.ListView
 		var i int32
@@ -588,6 +597,9 @@ func (f *TFormConv) setEvent() {
 				item.SetChecked(f.ChangeChkBox.Checked())
 			}
 		}
+	})
+	f.HideChkBox.SetOnClick(func(vcl.IObject) {
+		f.updateListView()
 	})
 }
 
@@ -606,6 +618,48 @@ func lvTraiCompare(sender vcl.IObject, item1, item2 *vcl.TListItem, data int32, 
 	} else {
 		*compare = -int32(strings.Compare(s1, s2))
 	}
+}
+
+func (f *TFormConv) updateListView() {
+	listView := f.ListView
+	listView.Items().Clear()
+	listView.Items().BeginUpdate()
+
+	changeCount := 0
+	selectChange := f.ChangeChkBox.Checked()
+	hideNochange := f.HideChkBox.Checked()
+	for i, conv := range Convs {
+		isChange := conv.hasChanged()
+		if hideNochange {
+			if isChange {
+				changeCount += 1
+				item := listView.Items().Add()
+				item.SetCaption(conv.AbsPath) // 第一列为Caption属性所管理
+				item.SetChecked(selectChange)
+				item.SubItems().Add("配置有变化")
+				item.SubItems().Add("-")
+				item.SetData(uintptr(i))
+			}
+		} else {
+			item := listView.Items().Add()
+			item.SetCaption(conv.AbsPath) // 第一列为Caption属性所管理
+			if isChange {
+				changeCount += 1
+				item.SetChecked(selectChange)
+				item.SubItems().Add("配置有变化")
+			} else {
+				item.SubItems().Add("-")
+			}
+			item.SubItems().Add("-")
+			item.SetData(uintptr(i))
+		}
+	}
+	listView.Items().EndUpdate()
+	listView.CustomSort(0, int(1)) // 按是否变化排序列表
+
+	f.PrgBar.SetPosition(0)
+	f.Statusbar.Panels().Items(0).SetText(fmt.Sprintf("文件数量：%d", int32(len(Convs))))
+	f.Statusbar.Panels().Items(1).SetText(fmt.Sprintf("有变化的数量：%d", changeCount))
 }
 
 /*------------------------public------------------------*/
@@ -651,35 +705,7 @@ func (f *TFormConv) LoadXlxs() {
 	if len(dir) > 0 {
 		err := WalkXlsx(dir)
 		if err == nil {
-			listView := f.ListView
-			listView.Items().Clear()
-			listView.Items().BeginUpdate()
-
-			convsLen := int32(len(Convs))
-			changeCount := 0
-			for i, conv := range Convs {
-				item := listView.Items().Add()
-				// 第一列为Caption属性所管理
-				isChange := conv.hasChanged()
-				item.SetChecked(isChange)
-				item.SetCaption(conv.AbsPath)
-				if isChange {
-					changeCount += 1
-					item.SubItems().Add("配置有变化")
-				} else {
-					item.SubItems().Add("-")
-				}
-				item.SubItems().Add("-")
-				item.SetData(uintptr(i))
-			}
-			listView.Items().EndUpdate()
-
-			listView.CustomSort(0, int(1)) // 按是否变化排序列表
-			f.ChangeChkBox.SetChecked(true)
-			f.PrgBar.SetPosition(0)
-
-			f.Statusbar.Panels().Items(0).SetText(fmt.Sprintf("文件数量：%d", convsLen))
-			f.Statusbar.Panels().Items(1).SetText(fmt.Sprintf("有变化的数量：%d", changeCount))
+			f.updateListView()
 			f.saveIni()
 		} else {
 			f.MsgBox(err.Error(), "加载配置错误")
