@@ -336,6 +336,13 @@ func (f *TFormConv) initPanel() {
 		f.Label2 = _createLabel("输出路径：", left, top)
 		left += f.Label2.Width() + 5
 		f.OutOutEdit = _createEdit("", left, top)
+		left += f.OutOutEdit.Width() + 10
+
+		refreshBtn := _createBtn("刷新", left, top)
+		refreshBtn.SetOnClick(func(vcl.IObject) {
+			f.updateEdit()
+			f.LoadXlxs()
+		})
 	}
 
 	// 第3行
@@ -344,7 +351,7 @@ func (f *TFormConv) initPanel() {
 		f.Label3 = _createLabel("翻译路径：", left, top)
 		left += f.Label3.Width() + 5
 		f.LangEdit = _createEdit("", left, top)
-		left += f.LangEdit.Width() + 5
+		left += f.LangEdit.Width() + 10
 
 		prgLable := _createLabel("生成进度：", left, top)
 		left += prgLable.Width() + 5
