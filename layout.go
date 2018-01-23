@@ -611,7 +611,7 @@ func CreateMainForm() *TFormConv {
 	vcl.Application.SetIcon(icon)
 
 	mainForm := vcl.Application.CreateForm()
-	mainForm.SetCaption("xlsx2lua")
+	mainForm.SetCaption("xlsxconv")
 	mainForm.ScreenCenter()
 	mainForm.SetPosition(types.PoScreenCenter)
 	mainForm.EnabledMaximize(false)
@@ -685,7 +685,7 @@ func (f *TFormConv) ConvResult(idxs map[int]bool, startTime time.Time) {
 
 	var i int32
 	var c *XlsxConv
-	var errCount, warnCount int
+	var okCount, errCount, warnCount int
 	count := listView.Items().Count()
 	for i = 0; i < count; i++ {
 		item := listView.Items().Item(i)
@@ -701,6 +701,7 @@ func (f *TFormConv) ConvResult(idxs map[int]bool, startTime time.Time) {
 				item.SubItems().SetStrings(0, "-")
 				item.SubItems().SetStrings(1, E_WARN_STR)
 			} else {
+				okCount++
 				item.SubItems().SetStrings(0, "-")
 				item.SubItems().SetStrings(1, fmt.Sprintf("耗时(ms):%d", c.Msec))
 			}
@@ -710,5 +711,5 @@ func (f *TFormConv) ConvResult(idxs map[int]bool, startTime time.Time) {
 	f.PrgBar.SetPosition(0)
 	f.Statusbar.Panels().Items(2).SetText(fmt.Sprintf("总耗时(ms)：%d", int(time.Now().Sub(startTime).Nanoseconds()/1e6)))
 
-	f.MsgBox(fmt.Sprintf("错误：%d条，警告：%d条", errCount, warnCount), "生成结果")
+	f.MsgBox(fmt.Sprintf("错误：%d条，警告：%d条，成功：%d条", errCount, warnCount, okCount), "生成结果")
 }
