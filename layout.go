@@ -553,6 +553,7 @@ func (f *TFormConv) setEvent() {
 			btn1.SetEnabled(false)
 			btn2.SetEnabled(false)
 			cbox.SetEnabled(false)
+			f.PrgBar.SetMax(int32(len(idxs)))
 
 			go startConv(idxs)
 		} else {
@@ -564,9 +565,6 @@ func (f *TFormConv) setEvent() {
 		var i int32
 		for i = 0; i < lv1.Items().Count(); i++ {
 			lv1.Items().Item(i).SetChecked(allChkBox.Checked())
-		}
-		if allChkBox.Checked() {
-			f.PrgBar.SetMax(int32(len(Convs)))
 		}
 	})
 
@@ -668,8 +666,6 @@ func (f *TFormConv) LoadXlxs() {
 
 			listView.CustomSort(0, int(1)) // 按是否变化排序列表
 			f.ChangeChkBox.SetChecked(true)
-
-			f.PrgBar.SetMax(int32(changeCount))
 			f.PrgBar.SetPosition(0)
 
 			f.Statusbar.Panels().Items(0).SetText(fmt.Sprintf("文件数量：%d", convsLen))
