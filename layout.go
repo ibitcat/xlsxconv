@@ -711,7 +711,7 @@ func CreateMainForm() *TFormConv {
 	icon := vcl.NewIcon()
 	icon.LoadFromResourceID(rtl.MainInstance(), 3)
 	vcl.Application.Initialize()
-	vcl.Application.SetMainFormOnTaskBar(false)
+	vcl.Application.SetMainFormOnTaskBar(true)
 	vcl.Application.SetIcon(icon)
 
 	mainForm := vcl.Application.CreateForm()
