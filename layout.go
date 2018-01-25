@@ -776,7 +776,6 @@ func (f *TFormConv) LoadXlxs() {
 }
 
 func (f *TFormConv) ConvResult(idxs map[int]bool, startTime time.Time) {
-	f.Panel.SetEnabled(true)
 	f.ListView.SetEnabled(true)
 	listView := f.ListView
 
@@ -805,8 +804,8 @@ func (f *TFormConv) ConvResult(idxs map[int]bool, startTime time.Time) {
 			//item.SubItems().EndUpdate()
 		}
 	}
+	f.Panel.SetEnabled(true)
 	f.PrgBar.SetPosition(0)
 	f.Statusbar.Panels().Items(2).SetText(fmt.Sprintf("总耗时(ms)：%d", int(time.Now().Sub(startTime).Nanoseconds()/1e6)))
-
 	f.MsgBox(fmt.Sprintf("错误：%d条，警告：%d条，成功：%d条", errCount, warnCount, okCount), "生成结果")
 }
