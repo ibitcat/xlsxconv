@@ -293,45 +293,10 @@ func (f *TFormConv) initPanel() {
 		f.Btn2.SetHint("生成配置过程中，其他操作将无法进行")
 
 		left += f.Btn2.Width() + 10
-		svnUpBtn := _createBtn("SVN更新", left, top)
-		svnUpBtn.SetOnClick(func(vcl.IObject) {
-			if len(f.getInPutDir()) == 0 {
-				f.MsgBox("请选择配置路径(xlsx文件夹)", "错误")
-				return
-			}
-			_, err := exec.LookPath("TortoiseProc")
-			if err == nil {
-				command := fmt.Sprintf(`/command:update /path:%s /closeonend:0`, f.getParentDir())
-				cmdStr := exec.Command("TortoiseProc", command)
-				err = cmdStr.Run()
-				if err != nil {
-					f.MsgBox("SVN更新错误", "错误")
-				} else {
-					f.LoadXlxs()
-				}
-			} else {
-				f.MsgBox("请先安装TortoiseProc", "错误")
-			}
-		})
-		left += svnUpBtn.Width() + 10
-
-		svnCiBtn := _createBtn("SVN提交", left, top)
-		svnCiBtn.SetOnClick(func(vcl.IObject) {
-			if len(f.getInPutDir()) == 0 {
-				f.MsgBox("请选择配置路径(xlsx文件夹)", "错误")
-				return
-			}
-			_, err := exec.LookPath("TortoiseProc")
-			if err == nil {
-				command := fmt.Sprintf(`/command:commit /path:%s\ /closeonend:0`, f.getParentDir())
-				cmdStr := exec.Command("TortoiseProc", command)
-				err = cmdStr.Run()
-				if err != nil {
-					f.MsgBox("SVN提交错误", "错误")
-				}
-			} else {
-				f.MsgBox("请先安装TortoiseProc", "错误")
-			}
+		refreshBtn := _createBtn("重新载入", left, top)
+		refreshBtn.SetHint("重新载入配置")
+		refreshBtn.SetOnClick(func(vcl.IObject) {
+			f.LoadXlxs()
 		})
 	}
 
@@ -341,20 +306,13 @@ func (f *TFormConv) initPanel() {
 		f.Label2 = _createLabel("输出路径：", left, top)
 		left += f.Label2.Width() + 5
 		f.OutOutEdit = _createEdit("", left, top)
+
 		left += f.OutOutEdit.Width() + 10
-
-		refreshBtn := _createBtn("重新载入", left, top)
-		refreshBtn.SetHint("重新载入配置")
-		refreshBtn.SetOnClick(func(vcl.IObject) {
-			f.LoadXlxs()
-		})
-
-		left += refreshBtn.Width() + 10
 		prgLable := _createLabel("生成进度：", left, top+5)
 		left += prgLable.Width() + 5
 		prgbar := vcl.NewProgressBar(mainForm)
 		prgbar.SetParent(mainForm)
-		prgbar.SetBounds(left, top, 255, refreshBtn.Height())
+		prgbar.SetBounds(left, top, 255, f.OutOutEdit.Height())
 		prgbar.SetMin(0)
 		prgbar.SetPosition(0)
 		prgbar.SetOrientation(types.PbHorizontal)
@@ -373,7 +331,7 @@ func (f *TFormConv) initPanel() {
 		cbox.SetParent(pnl)
 		cbox.SetLeft(left)
 		cbox.SetTop(top)
-		cbox.SetWidth(300)
+		cbox.SetWidth(320)
 		cbox.SetOnChange(func(sender vcl.IObject) {
 			str := cbox.Text()
 			if cbox.Items().IndexOf(str) != -1 {
@@ -460,6 +418,53 @@ func (f *TFormConv) initListView() {
 	pmErr.SetCaption("显示错误")
 	pm.Items().Add(pmErr)
 	f.Pmitem = pm
+
+	line = vcl.NewMenuItem(mainForm)
+	line.SetCaption("-")
+	pm.Items().Add(line)
+
+	svnUpPmitem := vcl.NewMenuItem(mainForm)
+	svnUpPmitem.SetCaption("SVN更新")
+	pm.Items().Add(svnUpPmitem)
+	svnCiPmitem := vcl.NewMenuItem(mainForm)
+	svnCiPmitem.SetCaption("SVN提交")
+	pm.Items().Add(svnCiPmitem)
+	svnUpPmitem.SetOnClick(func(vcl.IObject) {
+		if len(f.getInPutDir()) == 0 {
+			f.MsgBox("请选择配置路径(xlsx文件夹)", "错误")
+			return
+		}
+		_, err := exec.LookPath("TortoiseProc")
+		if err == nil {
+			command := fmt.Sprintf(`/command:update /path:%s /closeonend:0`, f.getParentDir())
+			cmdStr := exec.Command("TortoiseProc", command)
+			err = cmdStr.Run()
+			if err != nil {
+				f.MsgBox("SVN更新错误", "错误")
+			} else {
+				f.LoadXlxs()
+			}
+		} else {
+			f.MsgBox("请先安装TortoiseProc", "错误")
+		}
+	})
+	svnCiPmitem.SetOnClick(func(vcl.IObject) {
+		if len(f.getInPutDir()) == 0 {
+			f.MsgBox("请选择配置路径(xlsx文件夹)", "错误")
+			return
+		}
+		_, err := exec.LookPath("TortoiseProc")
+		if err == nil {
+			command := fmt.Sprintf(`/command:commit /path:%s\ /closeonend:0`, f.getParentDir())
+			cmdStr := exec.Command("TortoiseProc", command)
+			err = cmdStr.Run()
+			if err != nil {
+				f.MsgBox("SVN提交错误", "错误")
+			}
+		} else {
+			f.MsgBox("请先安装TortoiseProc", "错误")
+		}
+	})
 
 	// 生成结果列表
 	imgList := vcl.NewImageList(mainForm)
