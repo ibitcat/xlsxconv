@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	//"unicode"
 
 	"gitee.com/ying32/govcl/vcl"
 	"gitee.com/ying32/govcl/vcl/rtl"
@@ -207,7 +208,7 @@ func (f *TFormConv) initfrmAbout() {
 	about.SetAutoSize(false)
 	about.SetAlignment(types.TaCenter)
 	about.SetLayout(types.TlCenter)
-	about.SetStyleElements(types.AkRight)
+	//about.SetStyleElements(types.AkRight)
 	about.SetCaption("这是一个奇怪的工具\r\ndomi © 2018")
 
 	//	btn := vcl.NewButton(frmAbout)
@@ -271,7 +272,7 @@ func (f *TFormConv) initPanel() {
 		// 路径input
 		left += f.Label1.Width() + 5
 		cbox := vcl.NewComboBox(mainForm)
-		cbox.SetParent(mainForm)
+		cbox.SetParent(pnl)
 		cbox.SetLeft(left)
 		cbox.SetTop(top)
 		cbox.SetWidth(300)
@@ -342,11 +343,22 @@ func (f *TFormConv) initPanel() {
 		f.OutOutEdit = _createEdit("", left, top)
 		left += f.OutOutEdit.Width() + 10
 
-		refreshBtn := _createBtn("刷新", left, top)
+		refreshBtn := _createBtn("重新载入", left, top)
 		refreshBtn.SetHint("重新载入配置")
 		refreshBtn.SetOnClick(func(vcl.IObject) {
 			f.LoadXlxs()
 		})
+
+		left += refreshBtn.Width() + 10
+		prgLable := _createLabel("生成进度：", left, top+5)
+		left += prgLable.Width() + 5
+		prgbar := vcl.NewProgressBar(mainForm)
+		prgbar.SetParent(mainForm)
+		prgbar.SetBounds(left, top, 255, refreshBtn.Height())
+		prgbar.SetMin(0)
+		prgbar.SetPosition(0)
+		prgbar.SetOrientation(types.PbHorizontal)
+		f.PrgBar = prgbar
 	}
 
 	// 第3行
@@ -355,17 +367,41 @@ func (f *TFormConv) initPanel() {
 		f.Label3 = _createLabel("翻译路径：", left, top)
 		left += f.Label3.Width() + 5
 		f.LangEdit = _createEdit("", left, top)
-		left += f.LangEdit.Width() + 10
 
-		prgLable := _createLabel("生成进度：", left, top)
-		left += prgLable.Width() + 5
-		prgbar := vcl.NewProgressBar(mainForm)
-		prgbar.SetParent(mainForm)
-		prgbar.SetBounds(left, top, 200, 20)
-		prgbar.SetMin(0)
-		prgbar.SetPosition(0)
-		prgbar.SetOrientation(types.PbHorizontal)
-		f.PrgBar = prgbar
+		left += f.LangEdit.Width() + 10
+		cbox := vcl.NewComboBox(mainForm)
+		cbox.SetParent(pnl)
+		cbox.SetLeft(left)
+		cbox.SetTop(top)
+		cbox.SetWidth(300)
+		cbox.SetOnChange(func(sender vcl.IObject) {
+			str := cbox.Text()
+			if cbox.Items().IndexOf(str) != -1 {
+				lvCount := f.ListView.Items().Count()
+				for i, c := range Convs {
+					if c.AbsPath == str {
+						if i >= int(lvCount) {
+							return
+						}
+						item := f.ListView.Items().Item(int32(i))
+						f.ListView.SetSelected(item)
+						item.MakeVisible(true)
+						//item.SetSelected(true)
+						//item.SetFocused(true)
+						break
+					}
+				}
+				return
+			}
+
+			res := FuzzyMatching.ClosestN(str, 5)
+			cbox.Items().Clear()
+			cbox.SetSelStart(int32(len(str)))
+			for _, his := range res {
+				cbox.Items().Add(his)
+			}
+			cbox.SetDroppedDown(true)
+		})
 	}
 
 	// 第4行
@@ -704,8 +740,8 @@ func (f *TFormConv) LoadXlxs() {
 	dir := f.InputCbox.Text()
 	if len(dir) > 0 {
 		err := WalkXlsx(dir)
+		f.updateListView()
 		if err == nil {
-			f.updateListView()
 			f.saveIni()
 		} else {
 			f.MsgBox(err.Error(), "加载配置错误")

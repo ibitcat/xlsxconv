@@ -10,7 +10,11 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+
+	"github.com/schollz/closestmatch"
 )
+
+var FuzzyMatching *closestmatch.ClosestMatch
 
 func FindLangFolder(dir string) string {
 	if len(dir) > 0 {
@@ -94,6 +98,13 @@ func WalkXlsx(dir string) error {
 		return err
 	}
 
+	// fuzzy matching
+	wordsToTest := make([]string, 0, len(Convs))
+	for _, c := range Convs {
+		wordsToTest = append(wordsToTest, c.AbsPath)
+	}
+	bagSizes := []int{2}
+	FuzzyMatching = closestmatch.New(wordsToTest, bagSizes)
 	return nil
 }
 

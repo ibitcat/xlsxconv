@@ -13,7 +13,7 @@ var (
 func main() {
 	ConvForm = CreateMainForm()
 	ConvForm.CreateControl()
-	ConvForm.LoadXlxs()
+	go ConvForm.LoadXlxs()
 
 	// app run
 	vcl.Application.Run()
