@@ -33,6 +33,7 @@ type TFormConv struct {
 	Panel                   *vcl.TPanel       // 布局panel
 	Label1, Label2, Label3  *vcl.TLabel       // xlsx路径、输出路径、翻译路径标签
 	InputCbox               *vcl.TComboBox    // xlsx路径选择框
+	SearchCbox              *vcl.TComboBox    // 搜索框
 	OutOutEdit              *vcl.TEdit        // 输出路径框
 	LangEdit                *vcl.TEdit        // 翻译路径框
 	Btn1, Btn2              *vcl.TButton      // 按钮(选择路径，生成配置)
@@ -332,6 +333,7 @@ func (f *TFormConv) initPanel() {
 		cbox.SetLeft(left)
 		cbox.SetTop(top)
 		cbox.SetWidth(320)
+		f.SearchCbox = cbox
 		cbox.SetOnChange(func(sender vcl.IObject) {
 			str := cbox.Text()
 			if cbox.Items().IndexOf(str) != -1 {
@@ -572,6 +574,7 @@ func (f *TFormConv) setEvent() {
 		if cbox.ItemIndex() != -1 {
 			f.updateEdit()
 			f.LoadXlxs()
+			f.SearchCbox.Clear()
 		}
 	})
 
