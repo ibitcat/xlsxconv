@@ -410,6 +410,10 @@ func (f *TFormConv) initListView() {
 	pmitem3.SetCaption("打开翻译目录")
 	pm.Items().Add(pmitem3)
 
+	pmitem4 := vcl.NewMenuItem(mainForm)
+	pmitem4.SetCaption("打开Config目录")
+	pm.Items().Add(pmitem4)
+
 	line = vcl.NewMenuItem(mainForm)
 	line.SetCaption("-")
 	pm.Items().Add(line)
@@ -533,6 +537,12 @@ func (f *TFormConv) initListView() {
 	})
 	pmitem3.SetOnClick(func(vcl.IObject) {
 		dir := f.getLangDir()
+		if len(dir) > 0 {
+			rtl.SysOpen(dir)
+		}
+	})
+	pmitem4.SetOnClick(func(vcl.IObject) {
+		dir := f.getParentDir()
 		if len(dir) > 0 {
 			rtl.SysOpen(dir)
 		}
