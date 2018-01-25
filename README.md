@@ -9,5 +9,5 @@
 
 需要安装`rsrc`工具。然后运行`build.bat`，最后使用`Enigma Virtual Box`打包dll和exe，封装成一个exe，方便携带。
 
-![截图](./screenshots.png)
+![截图](./screenshots.jpg)
 
