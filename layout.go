@@ -335,17 +335,14 @@ func (f *TFormConv) initPanel() {
 		cbox.SetOnChange(func(sender vcl.IObject) {
 			str := cbox.Text()
 			if cbox.Items().IndexOf(str) != -1 {
-				lvCount := f.ListView.Items().Count()
-				for i, c := range Convs {
-					if c.AbsPath == str {
-						if i >= int(lvCount) {
-							return
-						}
-						item := f.ListView.Items().Item(int32(i))
-						f.ListView.SetSelected(item)
+				var i int32
+				lv := f.ListView
+				lvCount := lv.Items().Count()
+				for i = 0; i < lvCount; i++ {
+					item := lv.Items().Item(i)
+					if item.Caption() == str {
+						lv.SetSelected(item)
 						item.MakeVisible(true)
-						//item.SetSelected(true)
-						//item.SetFocused(true)
 						break
 					}
 				}
